@@ -1,12 +1,40 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Link } from 'expo-router';
+import Carousel from 'react-native-snap-carousel';
+
+
+const SLIDER_WIDTH = Dimensions.get('window').width;
+const ITEM_WIDTH = SLIDER_WIDTH * 0.50;
+
+const carouselItems = [
+  {
+    imgUrl:
+    'https://love.doghero.com.br/wp-content/uploads/2018/12/golden-retriever-1.png'
+  },
+  {
+    imgUrl:
+    'https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=90&strip=info&w=1024&h=682&crop=1'
+  },
+  {
+    imgUrl:
+    'https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2023/12/17/866513462-gato.jpg'
+  }
+];
+
+
+
+function carouselCardItem({ item, index }) {
+  return (
+    <View style={styles.cardCarousel} key={index}>
+      <Image style={styles.image} source={{ uri: item.imgUrl }} />
+    </View>
+  );
+}
 
 
 export default function Home() {
     return (
     <View style={styles.container}>
-      <Image source={require('../../../assets/logo.jpg')} style={styles.logo} />
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>ENCONTREI UM PET</Text>
         <Icon name="paw" size={20} color="#000" />
@@ -16,30 +44,27 @@ export default function Home() {
         <Icon name="search" size={20} color="#000" />
       </TouchableOpacity>
       <Text style={styles.sectionTitle}>ÚLTIMOS PETS ENCONTRADOS</Text>
-      <FlatList
-        data={pets}
-        renderItem={({ item }) => <Image source={{ uri: item.image }} style={styles.petImage} />}
-        keyExtractor={(item) => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
+      <Carousel
+        data={carouselItems}
+        renderItem={carouselCardItem}
+        sliderWidth={SLIDER_WIDTH}
+        itemWidth={ITEM_WIDTH}
+        useScrollView={true}
+      
       />
+
+
     </View>
 
     );
 }
 
-const pets = [
-    { id: '1', image: 'https://via.placeholder.com/100' },
-    { id: '2', image: 'https://via.placeholder.com/100' },
-    { id: '3', image: 'https://via.placeholder.com/100' },
-    { id: '4', image: 'https://via.placeholder.com/100' },
-];
 
 const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
-      paddingTop: 50,
+      paddingTop: 250,
       backgroundColor: '#f3ecdc',
     },
     logo: {
@@ -73,6 +98,13 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       marginHorizontal: 5,
     },
+    cardCarousel:{
+      width: ITEM_WIDTH,
+    },
+    image: {
+      height: 250,
+      borderRadius: 8
+    }
   });
 
 
