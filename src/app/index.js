@@ -7,18 +7,9 @@ const SLIDER_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = SLIDER_WIDTH * 0.50;
 
 const carouselItems = [
-  {
-    imgUrl:
-    'https://love.doghero.com.br/wp-content/uploads/2018/12/golden-retriever-1.png'
-  },
-  {
-    imgUrl:
-    'https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=90&strip=info&w=1024&h=682&crop=1'
-  },
-  {
-    imgUrl:
-    'https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2023/12/17/866513462-gato.jpg'
-  }
+  {imgUrl: 'https://love.doghero.com.br/wp-content/uploads/2018/12/golden-retriever-1.png'},
+  {imgUrl: 'https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=90&strip=info&w=1024&h=682&crop=1'},
+  {imgUrl: 'https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2023/12/17/866513462-gato.jpg'}
 ];
 
 
@@ -35,6 +26,7 @@ function carouselCardItem({ item, index }) {
 export default function Home() {
     return (
     <View style={styles.container}>
+      <Image source={require('./../../assets/logo.jpg')} style={styles.logo} />
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>ENCONTREI UM PET</Text>
         <Icon name="paw" size={20} color="#000" />
@@ -64,7 +56,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
-      paddingTop: 250,
+      paddingTop: 50,
       backgroundColor: '#f3ecdc',
     },
     logo: {
@@ -72,6 +64,12 @@ const styles = StyleSheet.create({
       height: 150,
       marginBottom: 20,
     },
+    formTitle: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: 'blueviolet',
+      margin: 10,
+  },
     button: {
       flexDirection: 'row',
       alignItems: 'center',
