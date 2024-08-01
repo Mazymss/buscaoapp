@@ -4,7 +4,7 @@ import {styles} from './LoginStyles';
 import {Link} from 'expo-router';
 
 
-export default function App() {
+export default function LoginScreen() {
   return (
     <View style={styles.login.container}>
       <Text style = {styles.login.formTitle}>Login no sistema</Text>
