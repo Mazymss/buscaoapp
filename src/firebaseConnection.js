@@ -4,12 +4,12 @@ import { getFirestore } from 'firebase/firestore';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCmypBSZDMMvpq2UGfFzMWMpoRwnRaCIR4",
-  authDomain: "buscaoapp-475ef.firebaseapp.com",
-  projectId: "buscaoapp-475ef",
-  storageBucket: "buscaoapp-475ef.appspot.com",
-  messagingSenderId: "62636780925",
-  appId: "1:62636780925:web:8b0fd0ed9d17f57ef27014"
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
 };
 
 const FIREBASE_APP = initializeApp(firebaseConfig);
