@@ -13,7 +13,7 @@ export default function App(){
         <NavigationContainer independent={true}>
             <Stack.Navigator initialRouteName="Login">
                 <Stack.Screen name="Login" component={LoginScreen} options={{headerShown: false}}/>
-                <Stack.Screen name="CadastroAnimal" component={CadastroAnimal} options={{headerShown: false}}/>
+                <Stack.Screen name="Cadastro" component={CadastroAnimal} options={{headerShown: false}}/>
                 <Stack.Screen name="Home" component={Home} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>

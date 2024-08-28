@@ -1,11 +1,12 @@
 import React, {useState} from 'react';
 import { TextInput, Text, View, Pressable } from 'react-native';
 import { FIREBASE_AUTH } from './../../firebaseConnection';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import {styles} from './LoginStyles';
 
 
 
-export default function LoginScreen() {
+export default function LoginScreen({navigation }) {
 
   const [email, setEmail] = useState('');
   const[password, setPassword] = useState('');
@@ -15,7 +16,7 @@ export default function LoginScreen() {
   const signIn = async ()=> {
     setLoading(true);
     try{
-      const response = await auth.signInWithEmailAndPassword(email, password);
+      const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
     } catch (error){
       console.log(error);
@@ -27,7 +28,7 @@ export default function LoginScreen() {
   const signUp = async ()=> {
     setLoading(true);
     try{
-      const response = await auth.createUserWithEmailAndPassword(email, password);
+      const response = await createUserWithEmailAndPassword(auth, email, password);
       console.log(response);
     } catch(error){
       console.log(error);
@@ -46,24 +47,26 @@ export default function LoginScreen() {
         autoCapitalize="none"
         autoComplete="email"
         value={email}
-        onchangeText={setEmail}
+        onChangeText={setEmail}
+        autoFocus={true}
+
       />
       <TextInput style= {styles.login.formImput} 
         placeholder="Informe a senha"
-        autoCapitalize="nome"
+        autoCapitalize="none"
         secureTextEntry
         value={password}
-        onchangeText={setPassword}
+        onChangeText={setPassword}
 
       />
-      <Pressable style={styles.login.formButton} onPress={signIn}>
+      <Pressable style={styles.login.formButton} onPress={signIn} disabled={loading}>
         <Text style={styles.login.textButton}>Logar</Text>
       </Pressable>
       <View style={styles.login.subContainer}>
         <Pressable style={styles.login.subButton}>
           <Text style={styles.login.subTextButton}>Esqueci minha senha</Text>
         </Pressable>
-        <Pressable style={styles.login.subButton} onPress={signUp}>
+        <Pressable style={styles.login.subButton} onPress={()=> navigation.navigate('Cadastro')} disabled={loading}>
           <Text style={styles.login.subTextButton}>Novo usuário</Text>
         </Pressable>
       </View>

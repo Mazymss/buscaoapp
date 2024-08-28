@@ -1,12 +1,27 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-    cadastro: {
+    login:{
         container: {
             flex: 1,
             backgroundColor: '#fff',
             alignItems: 'center',
             justifyContent: 'center',
+        },
+        formTitle: {
+            fontSize: 30,
+            fontWeight: 'bold',
+            color: 'blueviolet',
+            margin: 10,
+        },
+        formImput: {
+            borderColor: 'blueViolet',
+            borderWidth: 1,
+            borderRadius: 10,
+            fontSize: 18,
+            width: '80%',
+            padding: 10,
+            margin: 10,
         },
     
         formButton: {
@@ -23,8 +38,20 @@ export const styles = StyleSheet.create({
             fontSize: 20,
             fontWeight: 'bold',
         },
-
-
+    
+        subContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '80%',
+        },
+    
+        subButton: {
+            padding: 10,
+        },
+    
+        subTextButton: {
+            color: 'blueviolet',
+        },
     }
 
 
