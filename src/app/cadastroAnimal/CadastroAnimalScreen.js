@@ -1,17 +1,31 @@
 import React, {useState} from 'react';
-import { TextInput, Text, View, Pressable } from 'react-native';
+import { TextInput, Text, View, Pressable, Alert } from 'react-native';
 import { FIREBASE_AUTH } from './../../firebaseConnection';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {getDatabase, ref, set, serverTimestamp} from 'firebase/database';
 import {styles} from './CadastroAnimalStyles';
 
 
 export default function CadastroAnimal({navigation}){
 
+    const errorMessages = {
+      'auth/email-already-in-use':
+        'O e-mail fornecido já está em uso. Por favor, utilize outro e-mail.',
+      'auth/invalid-email' :
+        'O e-mail fornecido é inválido. Por favor, verifique e tente novamente.',
+      'auth/operation-not-allowed':
+        'O cadastro de usuários está desabilitado no momento.',
+      'auth/weak-password':
+        'A senha fornecida é muito fraca. Por favor escolha uma senha mais forte.',
+      default: 'Ocorreu um erro durante o cadastro. Por favor, tente novamente.',
+
+    };
+
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const auth = FIREBASE_AUTH;
+    const auth = FIREBASE_AUTH; 
 
         
     const signUp = async ()=> {
@@ -19,12 +33,29 @@ export default function CadastroAnimal({navigation}){
         try{
             const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log(response);
+            await saveUserData(response);
+            navigation.navigate('Home');
         } catch (error){
             console.log(error);
+            const friendlyErrorMessage = getFriendlyErrorMessage(error.code);
+            Alert.alert(friendlyErrorMessage);
         } finally{
             setLoading(false);
         }
     }
+
+    const getFriendlyErrorMessage = errorCode => {
+      return errorMessages[errorCode] || errorMessages['default'];
+    };
+
+    const saveUserData = async user => {
+      const db = getDatabase();
+      await set(ref(db, 'users/' + user.user.uid), {
+        mail: user.user.email,
+        createdAt: serverTimestamp(),
+        name: name,
+      });
+    };
 
     return(
         <View style={styles.login.container}>
