@@ -16,21 +16,10 @@ export default function LoginScreen({navigation }) {
   const signIn = async ()=> {
     setLoading(true);
     try{
-      const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log(response);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log(userCredential);
+      navigation.navigate('Home');
     } catch (error){
-      console.log(error);
-    } finally{
-      setLoading(false);
-    }
-  }
-
-  const signUp = async ()=> {
-    setLoading(true);
-    try{
-      const response = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(response);
-    } catch(error){
       console.log(error);
     } finally{
       setLoading(false);
@@ -40,7 +29,7 @@ export default function LoginScreen({navigation }) {
 
   return (
     <View style={styles.login.container}>
-      <Text style = {styles.login.formTitle}>Login no sistema</Text>
+      <Text style = {styles.login.formTitle}>Bem-vindo ao Buscão!</Text>
       <TextInput style = {styles.login.formImput} 
         placeholder="Informe o e-mail"
         keyboardType="email-address"
@@ -59,14 +48,14 @@ export default function LoginScreen({navigation }) {
         onChangeText={setPassword}
 
       />
-      <Pressable style={styles.login.formButton} onPress={signIn} disabled={loading}>
+      <Pressable style={styles.login.formButton} onPress={signIn}>
         <Text style={styles.login.textButton}>Logar</Text>
       </Pressable>
       <View style={styles.login.subContainer}>
-        <Pressable style={styles.login.subButton}>
+        <Pressable style={styles.login.subButton} onPress={() => navigation.navigate('Recover')}>
           <Text style={styles.login.subTextButton}>Esqueci minha senha</Text>
         </Pressable>
-        <Pressable style={styles.login.subButton} onPress={()=> navigation.navigate('Cadastro')} disabled={loading}>
+        <Pressable style={styles.login.subButton} onPress={()=> navigation.navigate('SignUp')}>
           <Text style={styles.login.subTextButton}>Novo usuário</Text>
         </Pressable>
       </View>
