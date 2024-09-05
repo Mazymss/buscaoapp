@@ -24,6 +24,7 @@ export default function SignUpScreen({navigation}){
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(false);
     const auth = FIREBASE_AUTH; 
 
@@ -54,6 +55,7 @@ export default function SignUpScreen({navigation}){
         mail: user.user.email,
         createdAt: serverTimestamp(),
         name: name,
+        phone: phone
       });
     };
 
@@ -76,6 +78,16 @@ export default function SignUpScreen({navigation}){
           autoCapitalize="none"
           value={name}
           onChangeText={setName}
+          autoFocus={true}
+  
+        />
+
+        <TextInput style = {styles.login.formImput} 
+          placeholder="Contato"
+          keyboardType="phone"
+          autoCapitalize="none"
+          value={phone}
+          onChangeText={setPhone}
           autoFocus={true}
   
         />

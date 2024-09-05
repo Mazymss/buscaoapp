@@ -36,3 +36,4 @@ yarn-error.*
 
 # firebase
 src/firebaseConnection.js
+src/firebaseConnection.js

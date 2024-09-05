@@ -1,29 +1,62 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Carousel from 'react-native-snap-carousel';
+import { FIREBASE_DB } from './../../firebaseConnection';
+import { query, ref, get, orderByChild, limitToLast } from 'firebase/database';
 
 
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const ITEM_WIDTH = SLIDER_WIDTH * 0.50;
 
-const carouselItems = [
-  {imgUrl: 'https://love.doghero.com.br/wp-content/uploads/2018/12/golden-retriever-1.png'},
-  {imgUrl: 'https://super.abril.com.br/wp-content/uploads/2020/09/04-09_gato_SITE.jpg?quality=90&strip=info&w=1024&h=682&crop=1'},
-  {imgUrl: 'https://p2.trrsf.com/image/fget/cf/774/0/images.terra.com/2023/12/17/866513462-gato.jpg'}
-];
-
-
-
-function carouselCardItem({ item, index }) {
-  return (
-    <View style={styles.cardCarousel} key={index}>
-      <Image style={styles.image} source={{ uri: item.imgUrl }} />
-    </View>
-  );
-}
 
 
 export default function Home() {
+
+  const [carouselItems, setCarouselItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
+
+  useEffect(() => {
+    const getPets = async () => {
+      const db = FIREBASE_DB;
+      const petsRef = query(ref(db, 'pets'), orderByChild('timestamp'), limitToLast(10));
+      const snapshot = await get(petsRef);
+      const filteredPets = [];
+      
+      if(snapshot.exists()){
+        const data = Object.values(snapshot.val());
+        console.log("Dados brutos do Firebase: ", data);
+  
+        if(data){
+          Object.keys(data).forEach((key) => {
+            const pet = data[key];
+            if (pet.status === 'cadastrado') {
+              filteredPets.unshift(pet);
+            }
+          });
+        }
+  
+      } else {
+        console.log("No data available");
+      }
+      setCarouselItems(filteredPets);
+      setLoading(false);
+    };
+
+    getPets();
+  }, []);
+
+
+  function carouselCardItem({ item, index }) {
+    return (
+      <View style={styles.cardCarousel} key={index}>
+        <Image style={styles.image} source={{ uri: item.image }} />
+      </View>
+    );
+  }
+
     return (
     <View style={styles.container}>
       <Image source={require('./../../../assets/logo.jpg')} style={styles.logo} />
@@ -35,16 +68,22 @@ export default function Home() {
         <Text style={styles.buttonText}>PROCURO MEU PET</Text>
         <Icon name="search" size={20} color="#000" />
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText}>MEUS PETS CADASTRADOS</Text>
+        <Icon name="search" size={20} color="#000" />
+      </TouchableOpacity>
       <Text style={styles.sectionTitle}>ÚLTIMOS PETS ENCONTRADOS</Text>
-      <Carousel
+      {loading ? (
+        <ActivityIndicator size="large" color= "#000" />
+      ) : (
+        <Carousel
         data={carouselItems}
         renderItem={carouselCardItem}
         sliderWidth={SLIDER_WIDTH}
         itemWidth={ITEM_WIDTH}
         useScrollView={true}
-      
-      />
-
+        />
+      )}
 
     </View>
 
