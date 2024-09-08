@@ -11,7 +11,7 @@ const ITEM_WIDTH = SLIDER_WIDTH * 0.50;
 
 
 
-export default function Home() {
+export default function Home({navigation}) {
 
   const [carouselItems, setCarouselItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +60,7 @@ export default function Home() {
     return (
     <View style={styles.container}>
       <Image source={require('./../../../assets/logo.jpg')} style={styles.logo} />
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onpress={navigation.navigate('NewPet')}>
         <Text style={styles.buttonText}>ENCONTREI UM PET</Text>
         <Icon name="paw" size={20} color="#000" />
       </TouchableOpacity>
