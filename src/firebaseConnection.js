@@ -11,7 +11,10 @@ const firebaseConfig = {
   storageBucket: "",
   messagingSenderId: "",
   appId: ""
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6fe44aab07b747bf7509ce74be82728242ae8776
 };
 
 const FIREBASE_APP = initializeApp(firebaseConfig);
