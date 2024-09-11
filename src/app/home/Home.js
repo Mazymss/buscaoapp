@@ -60,7 +60,7 @@ export default function Home({navigation}) {
     return (
     <View style={styles.container}>
       <Image source={require('./../../../assets/logo.jpg')} style={styles.logo} />
-      <TouchableOpacity style={styles.button} onpress={navigation.navigate('NewPet')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('NewPet')}>
         <Text style={styles.buttonText}>ENCONTREI UM PET</Text>
         <Icon name="paw" size={20} color="#000" />
       </TouchableOpacity>

@@ -7,6 +7,7 @@ import SignUpScreen from './login/SignUpScreen'
 import RecoverScreen from './login/RecoverScreen'
 import Home from './home/Home'
 import NewPetScreen from './found/NewPetScreen'
+import LocationScreen from './found/LocationScreen'
 
 
 const Stack = createStackNavigator();
@@ -20,6 +21,7 @@ export default function App(){
                 <Stack.Screen name="Recover" component={RecoverScreen} options={{headerShown: false}}/>
                 <Stack.Screen name="Home" component={Home} options={{headerShown: false}}/>
                 <Stack.Screen name="NewPet" component={NewPetScreen} options={{headerShown: false}}/>
+                <Stack.Screen name="Location" component={LocationScreen} options={{headerShown: false}}/>
             </Stack.Navigator>
         </NavigationContainer>
     )
