@@ -1,13 +1,40 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, Image, StyleSheet, Button, TouchableOpacity, Pressable } from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
-import * as ImagePicker from 'expo-image-picker'
 import * as Location from 'expo-location';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 
 export default function LocationScreen({navigation}) {
+
+    const [locationPermission, setLocationPermission] = useState(null);
+
+    const requestLocalPermission = async () => {
+        const {status} = await Location.requestForegroundPermissionsAsync();
+        setLocationPermission(status === 'granted');
+        if (status !== 'granted'){
+            Alert.alert('Permissão de localização negada. Você precisa conceder permissão para usar a localização');
+        } else {
+            getUserLocation();
+        }
+    };
+
+    const getUserLocation = async () => {
+        const location = await Location.getCurrentPositionAsync({});
+        setRegion({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+        });
+    };
+
+    useEffect(() => {
+        requestLocalPermission();
+    }, []);
+
+    
 
     const [region, setRegion] = useState({
         latitude: -23.55052,
@@ -26,7 +53,7 @@ export default function LocationScreen({navigation}) {
         });
     }
 
-    const onPress =(e) => {
+    const onMapPress = (e) => {
         const {latitude, longitude} = e.nativeEvent.coordinate;
         setRegion({
             ...region,
@@ -41,16 +68,16 @@ export default function LocationScreen({navigation}) {
             style={styles.map}
             region={region}
             onRegionChangeComplete={handleRegionChange}
-        >
+            onPress={onMapPress}
+            showsUserLocation={true}
+            followsUserLocation={true}>
+
             <Marker coordinate={{latitude: region.latitude, longitude: region.longitude}}/>
         </MapView>
 
         <TouchableOpacity  style={styles.buttonLocation} onPress={handleLocationSelect}>
            <Text style={styles.locationText}>DEFINIR LOCALIZAÇÃO</Text>
         </TouchableOpacity>
-        
-
-        <Button title = "Definir Localização" onPress={handleLocationSelect}/>
       
     </View>
 
@@ -74,5 +101,18 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
     },
+    locationText: {
+        color: 'white',
+        fontSize: 16,
+        marginLeft: 10,
+    },
+    buttonLocation: {
+        backgroundColor: '#9d6964',
+        width: '100%',
+        marginTop: 32,
+        padding: 16,
+        alignItems: 'center',
+    },
   });
+  
 

@@ -1,13 +1,16 @@
 
 import React, {useState, useEffect, route} from 'react';
-import { View, Button, Text, Image, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { View, Button, Text, Image, TouchableOpacity, StyleSheet, Pressable, TextInput, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {getAuth} from 'firebase/auth';
+import { FIREBASE_AUTH, FIREBASE_DB, FIREBASE_STORAGE } from './../../firebaseConnection';
+import {ref, push, serverTimestamp} from 'firebase/database';
+import {getStorage, ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 
-
-export default function NewPetScreen({navigation}){
+export default function NewPetScreen({route, navigation}){
 
     const [description, setDescription] = useState('');
     const [selectedPetCard, setSelectedPetCard] = useState();
@@ -15,6 +18,9 @@ export default function NewPetScreen({navigation}){
     const [selectedGenderCard, setSelectedGenderCard] = useState();
     const [image, setImage] = useState(null);
     const [location, setLocation] = useState(null);
+    const auth = FIREBASE_AUTH;
+    const db = FIREBASE_DB;
+    
 
     const handlePetCardPress = (card) => {
         setSelectedPetCard(card);
@@ -41,8 +47,8 @@ export default function NewPetScreen({navigation}){
             quality: 1,
         });
         if (!result.canceled){
-            setImage(result.assets.uri); 
-            console.log(result.assets.uri); 
+            setImage(result.assets[0].uri); 
+            console.log(result.assets[0].uri); 
         }
     };
 
@@ -52,17 +58,88 @@ export default function NewPetScreen({navigation}){
     };
 
     useEffect(() => {
-        if(router.params?.location){
+        if(route.params?.location){
             setLocation({
-                latitude: router.params.latitude,
-                longitude: router.params.longitude,
+                latitude: route.params.latitude,
+                longitude: route.params.longitude,
             });
         }
     }, [route.params]);
 
+    const registerNewPet = async  () => {
+        const userId = auth.currentUser?.uid;
+        if (!userId){
+            Alert.alert('Erro', 'Usuário não autenticado');
+            return;
+        }
+
+        if (!image || !location){
+            Alert.alert('Erro', 'Imagem e localização são obrigatórios');
+            return;
+        }
+        const storage = getStorage;
+        const imageRef = storageRef(storage, 'pets/${userId}/${Date.now()}.jpg');
+
+        const img = await fetch(image);
+        const bytes = await img.blob();
+        await uploadBytes(imageRef, bytes);
+
+        const imageUrl = await getDownloadURL(imageRef);
+
+        var type = ''
+        var size = ''
+        var gender = ''
+
+        if (selectedPetCard == 1){
+            type = 'gato'
+        } else {
+            type = 'cachorro'
+        }
+
+        if (selectedSizeCard == 1){
+            size = 'pequeno'
+        } else if (selectedSizeCard == 2) {
+            size = 'médio'
+        }else{
+            size = 'grande'
+        }
+
+        if (selectedGenderCard == 1){
+            gender = 'fêmea'
+        } else if (selectedGenderCard == 2) {
+            gender = 'macho'
+        }else{
+            gender = 'n/d'
+        }
+
+        const petData = {
+            description: description,
+            gender: gender,
+            image: imageUrl,
+            location: location,
+            size: size,
+            status: 'cadastrado',
+            timestamp: serverTimestamp(),
+            type: type,
+            userId: userId,
+        };
+
+        try{
+            const petRef = ref(db, 'pets');
+            await push(petRef, petData);
+            Alert.alert('Sucesso', 'Dados enviados com sucesso!');
+        }catch (error){
+            console.error('Erro ao enviar os dados: ', error);
+            Alert.alert('Erro', 'Falha ao enviar os dados!');
+        }
+
+
+    }
+
 
     return(
-        <View style={styles.container}>
+       <ScrollView>
+             <View style={styles.container}>
             <Text style = {styles.formTitle}>SELECIONE O ANIMAL: </Text>
             <View style={styles.petContainer}>
                 <TouchableOpacity
@@ -155,10 +232,21 @@ export default function NewPetScreen({navigation}){
             <Ionicons name = "location-outline" size={24} color="white"></Ionicons>
             </TouchableOpacity>
 
-            <Pressable style={styles.formButton}>
+            <TextInput style={styles.formInput}
+                placeholder="Descrição do animal..."
+                keyboardType="text"
+                autoCapitalize="none"
+                value={description}
+                onChangeText={setDescription}
+                autoFocus={true}
+            />
+
+
+            <Pressable style={styles.formButton} onPress={registerNewPet}>
              <Text style={styles.textButton}>CADASTRAR ANIMAL</Text>
             </Pressable>
         </View>
+       </ScrollView>
     );
 }
 
@@ -166,7 +254,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
-      paddingTop: 50,
+      paddingTop: 20,
       backgroundColor: '#f3ecdc',
     },
     petContainer: {
@@ -174,8 +262,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     card: {
-        width: 110,
-        height: 150,
+        width: 100,
+        height: 140,
         backgroundColor: '#fff',
         borderRadius: 15,
         elevation: 5,
@@ -184,7 +272,7 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 10,
+        padding: 5,
         marginHorizontal: 10,
     },
     cardSize: {
@@ -199,11 +287,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
-        marginHorizontal: 10,
+        marginHorizontal: 5,
     },
     cardGender: {
         width: 90,
-        height: 120,
+        height: 100,
         backgroundColor: '#fff',
         borderRadius: 15,
         elevation: 5,
@@ -257,7 +345,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: '#9d6964',
         padding: 15,
-        marginVertical: 10,
+        marginVertical: 5,
         borderRadius: 10,
         width: '80%',
         justifyContent: 'space-between',
@@ -270,7 +358,7 @@ const styles = StyleSheet.create({
     formButton: {
         backgroundColor: '#9d6964',
         width: '80%',
-        marginTop: 32,
+        marginTop: 20,
         padding: 16,
         borderRadius: 10,
         alignItems: 'center',
@@ -280,5 +368,19 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    formInput:{
+        width: 330,
+        height: 90,
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        elevation: 0,
+        shadowColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        marginHorizontal: 10,
+        marginTop: 10,
+
+    }
 
 });

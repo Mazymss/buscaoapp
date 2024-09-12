@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Dimensions, ActivityIn
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Carousel from 'react-native-snap-carousel';
 import { FIREBASE_DB } from './../../firebaseConnection';
-import { query, ref, get, orderByChild, limitToLast } from 'firebase/database';
+import { onValue, query, ref, get, orderByChild, limitToLast } from 'firebase/database';
 
 
 const SLIDER_WIDTH = Dimensions.get('window').width;
@@ -19,33 +19,40 @@ export default function Home({navigation}) {
 
 
   useEffect(() => {
-    const getPets = async () => {
+    const getPets = () => {
       const db = FIREBASE_DB;
       const petsRef = query(ref(db, 'pets'), orderByChild('timestamp'), limitToLast(10));
-      const snapshot = await get(petsRef);
-      const filteredPets = [];
-      
-      if(snapshot.exists()){
-        const data = Object.values(snapshot.val());
-        console.log("Dados brutos do Firebase: ", data);
-  
-        if(data){
+
+      const unsubscribe = onValue(petsRef, (snapshot) => {
+        const filteredPets = [];
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log("Dados brutos do Firebase: ", data);
+
           Object.keys(data).forEach((key) => {
             const pet = data[key];
             if (pet.status === 'cadastrado') {
               filteredPets.unshift(pet);
             }
           });
+        } else {
+          console.log("Nenhum dado disponível");
         }
-  
-      } else {
-        console.log("No data available");
-      }
-      setCarouselItems(filteredPets);
-      setLoading(false);
+        setCarouselItems(filteredPets);
+        setLoading(false);
+      });
+
+      // Retorna a função de limpeza para remover o listener do Firebase
+      return unsubscribe;
     };
 
-    getPets();
+    const unsubscribe = getPets();
+    // Função de limpeza para remover o listener ao desmontar o componente
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
 
@@ -64,7 +71,7 @@ export default function Home({navigation}) {
         <Text style={styles.buttonText}>ENCONTREI UM PET</Text>
         <Icon name="paw" size={20} color="#000" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SearchPet')}>
         <Text style={styles.buttonText}>PROCURO MEU PET</Text>
         <Icon name="search" size={20} color="#000" />
       </TouchableOpacity>
