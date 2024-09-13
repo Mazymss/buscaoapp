@@ -17,7 +17,7 @@ export default function NewPetScreen({route, navigation}){
     const [selectedSizeCard, setSelectedSizeCard] = useState();
     const [selectedGenderCard, setSelectedGenderCard] = useState();
     const [image, setImage] = useState(null);
-    const [location, setLocation] = useState(null);
+    const [location, setLocation] = useState('');
     const auth = FIREBASE_AUTH;
     const db = FIREBASE_DB;
     
@@ -59,10 +59,9 @@ export default function NewPetScreen({route, navigation}){
 
     useEffect(() => {
         if(route.params?.location){
-            setLocation({
-                latitude: route.params.latitude,
-                longitude: route.params.longitude,
-            });
+            setLocation(route.params?.location);
+            console.log('location: '+ JSON.stringify(location));
+
         }
     }, [route.params]);
 
@@ -77,8 +76,8 @@ export default function NewPetScreen({route, navigation}){
             Alert.alert('Erro', 'Imagem e localização são obrigatórios');
             return;
         }
-        const storage = getStorage;
-        const imageRef = storageRef(storage, 'pets/${userId}/${Date.now()}.jpg');
+        const storage = getStorage();
+        const imageRef = storageRef(storage, `pets/${userId}/${Date.now()}.jpg`);
 
         const img = await fetch(image);
         const bytes = await img.blob();

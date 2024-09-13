@@ -8,6 +8,7 @@ export default function SearchPetScreen({navigation}){
 
     const [locationPermission, setLocationPermission] = useState(null);
     const [userLocation, setUserLocation] = useState(null);
+    const [userCity, setUserCity] = useState('');
     const [pets, setPets] = useState([]);
 
     useEffect(()=> {
@@ -17,10 +18,21 @@ export default function SearchPetScreen({navigation}){
 
             if(status === 'granted'){
                 const location = await Location.getCurrentPositionAsync({});
+                console.log('location: ' + JSON.stringify(location))
+                const {latitude, longitude} = location.coords;
                 setUserLocation({
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude,
                 });
+
+                const reverseGeocode = await Location.reverseGeocodeAsync({latitude, longitude});
+                console.log('reverseGeocode' + reverseGeocode)
+                if(reverseGeocode.lenght > 0){
+                    const {city, subregion, region} = reverseGeocode[0];
+                    setUserCity(city || subregion || region || 'Localização desconhecida');
+                }
+
+
                 fetchPets();
             }
         })();
@@ -30,12 +42,35 @@ export default function SearchPetScreen({navigation}){
         const petsRef = ref(FIREBASE_DB, 'pets');
         onValue(petsRef, (snapshot) => {
             const data = snapshot.val();
-            if (data){
-                const petsArray = Object.values(data);
+            if (data && userLocation) {
+                let petsArray = Object.values(data);
+
+                petsArray = petsArray.map((pet) => {
+                    const [petLat, petLng] = pet.location.split(',').map(Number);
+                    const distance = calculateDistance(userLocation.latitude, userLocation.longitude, petLat, petLng);
+                    return {...pet, distance};
+                }).sort((a,b) => a.distance - b.distance);
                 setPets(petsArray);
             }
         });
     };
+
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Raio da Terra em quilômetros
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2); 
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        const distance = R * c; // Distância em km
+        return distance;
+    }
+
+    const deg2rad = (deg) => {
+        return deg * (Math.PI/180);
+    }
 
     const renderPetItem = ({item}) => (
         <TouchableOpacity styles={styles.card}>
@@ -45,13 +80,22 @@ export default function SearchPetScreen({navigation}){
                 <Text style={styles.petText}>Porte: {item.size}</Text>
                 <Text style={styles.petText}>Sexo: {item.gender}</Text>
                 <Text style={styles.petText}>Localiização: {item.location}</Text>
+                <Text style={styles.petText}>Distância: {item.distance.toFixed(2)} km</Text>
             </View>
         </TouchableOpacity>
     );
 
+    if(locationPermission === null){
+        return(
+            <View style={styles.container}>
+                <Text>Solicitando permissão de localização...</Text>
+            </View>
+        );
+    }
+
     if(!locationPermission){
         return(
-            <View style = {styles.container}>
+            <View style={styles.container}>
                 <Text>Permissão de localização é necessária para encontrar pets próximos</Text>
             </View>
         );
