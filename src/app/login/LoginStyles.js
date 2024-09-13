@@ -11,11 +11,11 @@ export const styles = StyleSheet.create({
         formTitle: {
             fontSize: 30,
             fontWeight: 'bold',
-            color: 'blueviolet',
+            color: '#9d6964',
             margin: 10,
         },
         formImput: {
-            borderColor: 'blueViolet',
+            borderColor: '#9d6964',
             borderWidth: 1,
             borderRadius: 10,
             fontSize: 18,
@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
         },
     
         formButton: {
-            backgroundColor: 'blueviolet',
+            backgroundColor: '#9d6964',
             width: '80%',
             margin: 10,
             padding: 10,
@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
         },
     
         subTextButton: {
-            color: 'blueviolet',
+            color: '#9d6964',
         },
     }
     

@@ -68,14 +68,14 @@ export default function Home({navigation}) {
     <View style={styles.container}>
       <Image source={require('./../../../assets/logo.jpg')} style={styles.logo} />
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('NewPet')}>
-        <Text style={styles.buttonText}>ENCONTREI UM PET</Text>
+        <Text style={styles.buttonText}>CADASTRAR UM PET</Text>
         <Icon name="paw" size={20} color="#000" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('SearchPet')}>
-        <Text style={styles.buttonText}>PROCURO MEU PET</Text>
+        <Text style={styles.buttonText}>PROCURAR UM PET</Text>
         <Icon name="search" size={20} color="#000" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ManagePet')}>
         <Text style={styles.buttonText}>MEUS PETS CADASTRADOS</Text>
         <Icon name="search" size={20} color="#000" />
       </TouchableOpacity>

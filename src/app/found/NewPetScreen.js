@@ -1,4 +1,3 @@
-
 import React, {useState, useEffect, route} from 'react';
 import { View, Button, Text, Image, TouchableOpacity, StyleSheet, Pressable, TextInput, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,6 +12,7 @@ import {getStorage, ref as storageRef, uploadBytes, getDownloadURL} from 'fireba
 export default function NewPetScreen({route, navigation}){
 
     const [description, setDescription] = useState('');
+    const [selectedRegisterCard, setSelectedRegisterCard] = useState();
     const [selectedPetCard, setSelectedPetCard] = useState();
     const [selectedSizeCard, setSelectedSizeCard] = useState();
     const [selectedGenderCard, setSelectedGenderCard] = useState();
@@ -21,7 +21,9 @@ export default function NewPetScreen({route, navigation}){
     const auth = FIREBASE_AUTH;
     const db = FIREBASE_DB;
     
-
+    const handleRegisterCardPress = (card) => {
+        setSelectedRegisterCard(card);
+    };
     const handlePetCardPress = (card) => {
         setSelectedPetCard(card);
     };
@@ -88,6 +90,7 @@ export default function NewPetScreen({route, navigation}){
         var type = ''
         var size = ''
         var gender = ''
+        var register = ''
 
         if (selectedPetCard == 1){
             type = 'gato'
@@ -111,13 +114,19 @@ export default function NewPetScreen({route, navigation}){
             gender = 'n/d'
         }
 
+        if (selectedRegisterCard == 1){
+            register = 'cadastrado'
+        } else {
+            register = 'perdido'
+        }
+
         const petData = {
             description: description,
             gender: gender,
             image: imageUrl,
             location: location,
             size: size,
-            status: 'cadastrado',
+            status: register,
             timestamp: serverTimestamp(),
             type: type,
             userId: userId,
@@ -139,6 +148,22 @@ export default function NewPetScreen({route, navigation}){
     return(
        <ScrollView>
              <View style={styles.container}>
+             <Text style = {styles.formTitle}>CADASTRAR OU BUSCAR PET</Text>
+            <View style={styles.petContainer}>
+                <TouchableOpacity
+                    style={[styles.cardRegisterSize, selectedRegisterCard === 1 && styles.selectedCard]}
+                    onPress={() => handleRegisterCardPress(1)}
+                >
+                    <Text style={styles.cardTitle}>PERDI MEU PET</Text>
+                </TouchableOpacity>
+        
+                <TouchableOpacity
+                    style={[styles.cardRegisterSize, selectedRegisterCard === 2 && styles.selectedCard]}
+                    onPress={() => handleRegisterCardPress(2)}
+                >
+                    <Text style={styles.cardTitle}>ACHEI UM PET PERDIDO</Text>
+                </TouchableOpacity>
+            </View>
             <Text style = {styles.formTitle}>SELECIONE O ANIMAL: </Text>
             <View style={styles.petContainer}>
                 <TouchableOpacity
@@ -253,7 +278,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       alignItems: 'center',
-      paddingTop: 20,
+      paddingTop: 15,
       backgroundColor: '#f3ecdc',
     },
     petContainer: {
@@ -261,8 +286,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     card: {
-        width: 100,
-        height: 140,
+        width: 120,
+        height: 100,
         backgroundColor: '#fff',
         borderRadius: 15,
         elevation: 5,
@@ -274,9 +299,23 @@ const styles = StyleSheet.create({
         padding: 5,
         marginHorizontal: 10,
     },
+    cardRegisterSize: {
+        width: 160,
+        height: 55,
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 10,
+        marginHorizontal: 5,
+    },
     cardSize: {
         width: 100,
-        height: 70,
+        height: 50,
         backgroundColor: '#fff',
         borderRadius: 15,
         elevation: 5,
@@ -290,7 +329,7 @@ const styles = StyleSheet.create({
     },
     cardGender: {
         width: 90,
-        height: 100,
+        height: 90,
         backgroundColor: '#fff',
         borderRadius: 15,
         elevation: 5,
@@ -307,13 +346,13 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     cardImage: {
-        width: '50%',
-        height: '35%',
+        width: 48,
+        height: 48,
         borderRadius: 10,
     },
     cardTitle: {
        // marginTop: 10,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: 'bold',
     },
     formTitle: {
@@ -369,7 +408,7 @@ const styles = StyleSheet.create({
     },
     formInput:{
         width: 330,
-        height: 90,
+        height: 80,
         backgroundColor: '#fff',
         borderRadius: 15,
         elevation: 0,
