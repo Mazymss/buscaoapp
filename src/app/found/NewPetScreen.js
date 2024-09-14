@@ -115,9 +115,9 @@ export default function NewPetScreen({route, navigation}){
         }
 
         if (selectedRegisterCard == 1){
-            register = 'cadastrado'
-        } else {
             register = 'perdido'
+        } else {
+            register = 'cadastrado'
         }
 
         const petData = {
@@ -148,7 +148,7 @@ export default function NewPetScreen({route, navigation}){
     return(
        <ScrollView>
              <View style={styles.container}>
-             <Text style = {styles.formTitle}>CADASTRAR OU BUSCAR PET</Text>
+             <Text style = {styles.formTitle}>CADASTRAR PET</Text>
             <View style={styles.petContainer}>
                 <TouchableOpacity
                     style={[styles.cardRegisterSize, selectedRegisterCard === 1 && styles.selectedCard]}

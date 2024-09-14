@@ -31,7 +31,7 @@ export default function Home({navigation}) {
 
           Object.keys(data).forEach((key) => {
             const pet = data[key];
-            if (pet.status === 'cadastrado') {
+            if (pet.status === 'cadastrado' || pet.status === 'perdido') {
               filteredPets.unshift(pet);
             }
           });

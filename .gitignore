@@ -35,5 +35,5 @@ yarn-error.*
 *.tsbuildinfo
 
 # firebase
-src/firebaseConnection.js
-src/firebaseConnection.js
+#src/firebaseConnection.js
+#src/firebaseConnection.js

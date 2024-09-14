@@ -101,7 +101,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
         <Image source={{ uri: item.image }} style={styles.petImage} />
         {item.status === 'cadastrado' && (
           <View style={[styles.statusBadge, { backgroundColor: 'green' }]}>
-            <Text style={styles.statusText}>Buscando Dono</Text>
+            <Text style={styles.statusText}>Buscando dono</Text>
           </View>
         )}
         {item.status === 'perdido' && (
